@@ -1,0 +1,3 @@
+--exe xyo-coff-to-def
+--use-path=source
+--use-project=xyo.static

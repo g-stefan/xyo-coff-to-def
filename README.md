@@ -1,2 +1,10 @@
-# xyo-coff-to-def
-XYO Coff to Def
+# XYO Coff to Def
+
+Extract symbols from COFF object and generate a DEF file for linker
+
+## License
+
+Copyright (c) Grigore Stefan
+
+Licensed under the [MIT](LICENSE) license.
+
