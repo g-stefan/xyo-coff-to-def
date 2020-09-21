@@ -18,4 +18,4 @@ echo "Error: %ACTION%"
 exit 1
 :StepX
 
-call :cmdX xyo-cc --mode=%ACTION% @source/xyo-coff-to-def.compile.info
+call :cmdX xyo-cc --mode=%ACTION% @source/xyo-coff-to-def.compile
