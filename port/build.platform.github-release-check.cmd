@@ -5,7 +5,7 @@ rem Created by Grigore Stefan <g_stefan@yahoo.com>
 
 SETLOCAL ENABLEDELAYEDEXPANSION
 
-echo -^> git-release-check xyo-coff-to-def
+echo -^> github-release-check xyo-coff-to-def
 
 set PROJECT=xyo-coff-to-def
 if not exist source\%PROJECT%.version.ini echo Error - no version & exit 1
