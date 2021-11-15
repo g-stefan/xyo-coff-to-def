@@ -10,10 +10,10 @@
 #ifndef XYO_COFF_TO_DEF_VERSION_HPP
 #define XYO_COFF_TO_DEF_VERSION_HPP
 
-#define XYO_COFF_TO_DEF_VERSION_ABCD                1,7,0,18
-#define XYO_COFF_TO_DEF_VERSION_STR                 "1.7.0"
-#define XYO_COFF_TO_DEF_VERSION_STR_BUILD           "18"
-#define XYO_COFF_TO_DEF_VERSION_STR_DATETIME        "2021-08-09 17:38:07"
+#define XYO_COFF_TO_DEF_VERSION_ABCD                1,8,0,19
+#define XYO_COFF_TO_DEF_VERSION_STR                 "1.8.0"
+#define XYO_COFF_TO_DEF_VERSION_STR_BUILD           "19"
+#define XYO_COFF_TO_DEF_VERSION_STR_DATETIME        "2021-11-15 16:51:54"
 
 #ifndef XYO_RC
 
