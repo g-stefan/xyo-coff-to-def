@@ -3,6 +3,6 @@ rem Public domain
 rem http://unlicense.org/
 rem Created by Grigore Stefan <g_stefan@yahoo.com>
 
-echo -^> version-dependency xyo-coff-to-def
+echo - %BUILD_PROJECT% ^> version-dependency-update
 
-xyo-cc --bump-version-minor-if-version-dependency xyo-coff-to-def
+xyo-cc --update-version-dependency %BUILD_PROJECT%

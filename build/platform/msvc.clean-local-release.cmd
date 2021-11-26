@@ -3,8 +3,6 @@ rem Public domain
 rem http://unlicense.org/
 rem Created by Grigore Stefan <g_stefan@yahoo.com>
 
-echo -^> clean xyo-coff-to-def
+echo - %BUILD_PROJECT% ^> clean-local-release
 
-if exist output\ rmdir /Q /S output
-if exist temp\ rmdir /Q /S temp
-
+if exist release\ rmdir /Q /S release
