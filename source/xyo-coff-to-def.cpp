@@ -12,7 +12,6 @@
 #include <stdio.h>
 #include <string.h>
 
-
 #include "xyo.hpp"
 #include "xyo-coff-to-def-version.hpp"
 #include "xyo-coff-to-def-license.hpp"
@@ -22,23 +21,23 @@ namespace Main {
 
 	using namespace XYO;
 
-	class Application :
-		public virtual IMain {
+	class Application : public virtual IMain {
 			XYO_DISALLOW_COPY_ASSIGN_MOVE(Application);
-		protected:
 
-			void getCoffSymbolsFromFile(PTSTR pszFileName, TRedBlackTreeOne<String > &retV, int showCoffSymbols);
-			int generateDefFile(TRedBlackTreeOne<String > &inList, PTSTR pszFileName, int mode);
+		protected:
+			void getCoffSymbolsFromFile(PTSTR pszFileName, TRedBlackTreeOne<String> &retV, int showCoffSymbols);
+			int generateDefFile(TRedBlackTreeOne<String> &inList, PTSTR pszFileName, int mode);
 
 			void showUsage();
 			void showLicense();
+
 		public:
-			inline Application() {};
+			inline Application(){};
 			int main(int cmdN, char *cmdS[]);
 			static void initMemory();
 	};
 
-	void Application::getCoffSymbolsFromFile(PTSTR pszFileName, TRedBlackTreeOne<String > &retV, int showCoffSymbols) {
+	void Application::getCoffSymbolsFromFile(PTSTR pszFileName, TRedBlackTreeOne<String> &retV, int showCoffSymbols) {
 		HANDLE hFile;
 		HANDLE hFileMapping;
 		PVOID pMemoryMappedFileBase;
@@ -55,17 +54,17 @@ namespace Main {
 			if (hFileMapping != nullptr) {
 				pMemoryMappedFileBase = MapViewOfFile(hFileMapping, FILE_MAP_READ, 0, 0, 0);
 				if (pMemoryMappedFileBase != nullptr) {
-					pFileHdr = (PIMAGE_FILE_HEADER) pMemoryMappedFileBase;
+					pFileHdr = (PIMAGE_FILE_HEADER)pMemoryMappedFileBase;
 					if ((pFileHdr->Machine == IMAGE_FILE_MACHINE_I386) ||
-						(pFileHdr->Machine == IMAGE_FILE_MACHINE_AMD64)) {
+					    (pFileHdr->Machine == IMAGE_FILE_MACHINE_AMD64)) {
 
 						if (showCoffSymbols) {
 							printf("Coff Symbols: %s\n\n", pszFileName);
 						};
 
-						pSymbol = (PIMAGE_SYMBOL) ((unsigned char *) pFileHdr + (pFileHdr->PointerToSymbolTable));
+						pSymbol = (PIMAGE_SYMBOL)((unsigned char *)pFileHdr + (pFileHdr->PointerToSymbolTable));
 						pSymbolEnd = pSymbol + pFileHdr->NumberOfSymbols;
-						pStringTable = (PSTR) pSymbolEnd;
+						pStringTable = (PSTR)pSymbolEnd;
 
 						for (; pSymbol < pSymbolEnd; pSymbol += (pSymbol->NumberOfAuxSymbols + 1)) {
 							if (pSymbol->StorageClass == IMAGE_SYM_CLASS_EXTERNAL) {
@@ -92,20 +91,19 @@ namespace Main {
 					UnmapViewOfFile(pMemoryMappedFileBase);
 				};
 				CloseHandle(hFileMapping);
-
 			};
 			CloseHandle(hFile);
 		};
 	};
 
-	int Application::generateDefFile(TRedBlackTreeOne<String > &inList, PTSTR pszFileName, int mode) {
+	int Application::generateDefFile(TRedBlackTreeOne<String> &inList, PTSTR pszFileName, int mode) {
 		FILE *out;
 		int retV;
 		retV = 0;
 		out = fopen(pszFileName, "wb");
 		if (out != nullptr) {
 			fprintf(out, "%s", "LIBRARY\r\nEXPORTS\r\n");
-			TRedBlackTreeOne<String >::TNode *i;
+			TRedBlackTreeOne<String>::TNode *i;
 			for (i = inList.begin(); i; i = i->successor()) {
 				if (StringCore::beginWith(i->key, "__real@")) {
 					continue;
@@ -150,7 +148,7 @@ namespace Main {
 				if (mode == 0) {
 					if (StringCore::beginWith(i->key, "_")) {
 						size_t index;
-						if(StringCore::indexOf(i->key, "@", index)) {
+						if (StringCore::indexOf(i->key, "@", index)) {
 							fwrite(i->key.value(), 1, i->key.length(), out);
 						} else {
 							fwrite(i->key.index(1), 1, i->key.length() - 1, out);
@@ -178,14 +176,13 @@ namespace Main {
 		printf("version %s build %s [%s]\n", XYOCoffToDef::Version::version(), XYOCoffToDef::Version::build(), XYOCoffToDef::Version::datetime());
 		printf("%s\n\n", XYOCoffToDef::Copyright::fullCopyright());
 		printf("%s\n",
-			"usage:\n"
-			"    xyo-coff-to-def [--out file] [--mode type] [--show] foo1.obj foo2.obj ...\n\n"
-			"options:\n"
-			"    --out file     output file (default out.def)\n"
-			"    --mode type    mode of operation [ WIN32 | WIN64 ]\n"
-			"    --license      show license\n"
-			"    --show         show coff symbols\n"
-		);
+		       "usage:\n"
+		       "    xyo-coff-to-def [--out file] [--mode type] [--show] foo1.obj foo2.obj ...\n\n"
+		       "options:\n"
+		       "    --out file     output file (default out.def)\n"
+		       "    --mode type    mode of operation [ WIN32 | WIN64 ]\n"
+		       "    --license      show license\n"
+		       "    --show         show coff symbols\n");
 	};
 
 	void Application::showLicense() {
@@ -193,14 +190,14 @@ namespace Main {
 	};
 
 	int Application::main(int cmdN, char *cmdS[]) {
-		TRedBlackTreeOne<String > coffList;
-		TRedBlackTreeOne<String > defList;
+		TRedBlackTreeOne<String> coffList;
+		TRedBlackTreeOne<String> defList;
 		int i;
 		char *opt;
 		char *defFile;
 		int coffMode;
 		int showCoffSymbols;
-		TRedBlackTreeOne<String >::TNode *coff;
+		TRedBlackTreeOne<String>::TNode *coff;
 
 		showCoffSymbols = 0;
 		defFile = "out.def";
@@ -243,34 +240,33 @@ namespace Main {
 			};
 		};
 
-
 		for (coff = coffList.begin(); coff; coff = coff->successor()) {
-			if(coff->key[0] == '@') {
+			if (coff->key[0] == '@') {
 				FILE *in;
-				in = fopen((char *) & (coff->key.value())[1], "rb");
-				if(in != nullptr) {
+				in = fopen((char *)&(coff->key.value())[1], "rb");
+				if (in != nullptr) {
 					int k;
 					char buffer[1024];
-					while(fgets(buffer, 1024, in)) {
-						if(buffer[0] == '/') {
-							if(buffer[1] == '/') {
+					while (fgets(buffer, 1024, in)) {
+						if (buffer[0] == '/') {
+							if (buffer[1] == '/') {
 								continue;
 							};
 						};
-						for(k = strlen(buffer); k >= 0; --k) {
-							if(buffer[k] == '\r') {
+						for (k = strlen(buffer); k >= 0; --k) {
+							if (buffer[k] == '\r') {
 								buffer[k] = 0;
 							};
-							if(buffer[k] == '\n') {
+							if (buffer[k] == '\n') {
 								buffer[k] = 0;
 							};
 						};
-						getCoffSymbolsFromFile((PTSTR) buffer, defList, showCoffSymbols);
+						getCoffSymbolsFromFile((PTSTR)buffer, defList, showCoffSymbols);
 					};
 					fclose(in);
 				};
 			} else {
-				getCoffSymbolsFromFile((PTSTR) coff->key.value(), defList, showCoffSymbols);
+				getCoffSymbolsFromFile((PTSTR)coff->key.value(), defList, showCoffSymbols);
 			};
 		};
 
@@ -286,10 +282,9 @@ namespace Main {
 	void Application::initMemory() {
 		String::initMemory();
 		Error::initMemory();
-		TMemory<TRedBlackTreeOne<String > >::initMemory();
+		TMemory<TRedBlackTreeOne<String>>::initMemory();
 	};
 
 };
 
 XYO_APPLICATION_MAIN_STD(Main::Application);
-
