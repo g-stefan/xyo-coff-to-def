@@ -1,0 +1,16 @@
+// Coff To Def
+// Copyright (c) 2022 Grigore Stefan <g_stefan@yahoo.com>
+// MIT License (MIT) <http://opensource.org/licenses/MIT>
+// SPDX-FileCopyrightText: 2022 Grigore Stefan <g_stefan@yahoo.com>
+// SPDX-License-Identifier: MIT
+
+#ifndef XYO_COFFTODEF_COPYRIGHT_RH
+#define XYO_COFFTODEF_COPYRIGHT_RH
+
+#define XYO_COFFTODEF_COPYRIGHT "Copyright (c) 2022 Grigore Stefan"
+#define XYO_COFFTODEF_PUBLISHER "Grigore Stefan"
+#define XYO_COFFTODEF_COMPANY XYO_COFFTODEF_PUBLISHER
+#define XYO_COFFTODEF_CONTACT "g_stefan@yahoo.com"
+#define XYO_COFFTODEF_FULL_COPYRIGHT XYO_COFFTODEF_COPYRIGHT " <" XYO_COFFTODEF_CONTACT ">"
+
+#endif

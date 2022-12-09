@@ -1,40 +1,137 @@
-//
-// XYO Coff To Def
-//
-// Copyright (c) 2020-2022 Grigore Stefan <g_stefan@yahoo.com>
-// Created by Grigore Stefan <g_stefan@yahoo.com>
-//
+// Coff To Def
+// Copyright (c) 2022 Grigore Stefan <g_stefan@yahoo.com>
 // MIT License (MIT) <http://opensource.org/licenses/MIT>
-//
+// SPDX-FileCopyrightText: 2022 Grigore Stefan <g_stefan@yahoo.com>
+// SPDX-License-Identifier: MIT
 
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <stdio.h>
 #include <string.h>
 
-#include "xyo.hpp"
-#include "xyo-coff-to-def-version.hpp"
-#include "xyo-coff-to-def-license.hpp"
-#include "xyo-coff-to-def-copyright.hpp"
+#include <XYO/CoffToDef/Application.hpp>
+#include <XYO/CoffToDef/Copyright.hpp>
+#include <XYO/CoffToDef/License.hpp>
+#include <XYO/CoffToDef/Version.hpp>
 
-namespace Main {
+namespace XYO::CoffToDef {
 
-	using namespace XYO;
+	void Application::showUsage() {
+		printf("xyo-coff-to-def - Extract symbols from COFF object and generate a DEF file for linker\n");
+		printf("version %s build %s [%s]\n", CoffToDef::Version::version(), CoffToDef::Version::build(), CoffToDef::Version::datetime());
+		printf("%s\n\n", CoffToDef::Copyright::fullCopyright());
+		printf("%s\n",
+		       "usage:\n"
+		       "    xyo-coff-to-def [--out file] [--mode type] [--show] foo1.obj foo2.obj ...\n\n"
+		       "options:\n"
+		       "    --out file     output file (default out.def)\n"
+		       "    --mode type    mode of operation [ WIN32 | WIN64 ]\n"
+		       "    --license      show license\n"
+		       "    --show         show coff symbols\n");
+	};
 
-	class Application : public virtual IMain {
-			XYO_DISALLOW_COPY_ASSIGN_MOVE(Application);
+	void Application::showLicense() {		
+		printf("%s%s", CoffToDef::License::licenseHeader(), CoffToDef::License::licenseBody());		
+	};
 
-		protected:
-			void getCoffSymbolsFromFile(PTSTR pszFileName, TRedBlackTreeOne<String> &retV, int showCoffSymbols);
-			int generateDefFile(TRedBlackTreeOne<String> &inList, PTSTR pszFileName, int mode);
+	void Application::showVersion() {
+		printf("version %s build %s [%s]\n", CoffToDef::Version::version(), CoffToDef::Version::build(), CoffToDef::Version::datetime());
+	};
 
-			void showUsage();
-			void showLicense();
+	void Application::initMemory() {
+		String::initMemory();
+		Error::initMemory();
+		TMemory<TRedBlackTreeOne<String>>::initMemory();
+	};
 
-		public:
-			inline Application(){};
-			int main(int cmdN, char *cmdS[]);
-			static void initMemory();
+	int Application::main(int cmdN, char *cmdS[]) {
+		TRedBlackTreeOne<String> coffList;
+		TRedBlackTreeOne<String> defList;
+		int i;
+		char *opt;
+		char *defFile;
+		int coffMode;
+		int showCoffSymbols;
+		TRedBlackTreeOne<String>::TNode *coff;
+
+		showCoffSymbols = 0;
+		defFile = "out.def";
+		coffMode = 0;
+
+		if (cmdN < 2) {
+			showUsage();
+			return 0;
+		};
+
+		for (i = 1; i < cmdN; ++i) {
+			if (strncmp(cmdS[i], "--", 2) == 0) {
+				opt = &cmdS[i][2];
+				if (strcmp(opt, "out") == 0) {
+					if (i + 1 < cmdN) {
+						defFile = cmdS[i + 1];
+						++i;
+					};
+					continue;
+				} else if (strcmp(opt, "mode") == 0) {
+					if (i + 1 < cmdN) {
+						if (strcmp(cmdS[i + 1], "WIN32") == 0) {
+							coffMode = 0;
+						};
+						if (strcmp(cmdS[i + 1], "WIN64") == 0) {
+							coffMode = 1;
+						};
+						++i;
+					};
+					continue;
+				};
+				if (strcmp(opt, "license") == 0) {
+					showLicense();
+				};
+				if (strcmp(opt, "show") == 0) {
+					showCoffSymbols = 1;
+				};
+			} else {
+				coffList.set(String(cmdS[i]));
+			};
+		};
+
+		for (coff = coffList.begin(); coff; coff = coff->successor()) {
+			if (coff->key[0] == '@') {
+				FILE *in;
+				in = fopen((char *)&(coff->key.value())[1], "rb");
+				if (in != nullptr) {
+					int k;
+					char buffer[1024];
+					while (fgets(buffer, 1024, in)) {
+						if (buffer[0] == '/') {
+							if (buffer[1] == '/') {
+								continue;
+							};
+						};
+						for (k = strlen(buffer); k >= 0; --k) {
+							if (buffer[k] == '\r') {
+								buffer[k] = 0;
+							};
+							if (buffer[k] == '\n') {
+								buffer[k] = 0;
+							};
+						};
+						getCoffSymbolsFromFile((PTSTR)buffer, defList, showCoffSymbols);
+					};
+					fclose(in);
+				};
+			} else {
+				getCoffSymbolsFromFile((PTSTR)coff->key.value(), defList, showCoffSymbols);
+			};
+		};
+
+		if (generateDefFile(defList, defFile, coffMode)) {
+		} else {
+			printf("Error: unable to generate def file %s\n", defFile);
+			return 1;
+		};
+
+		return 0;
 	};
 
 	void Application::getCoffSymbolsFromFile(PTSTR pszFileName, TRedBlackTreeOne<String> &retV, int showCoffSymbols) {
@@ -171,120 +268,8 @@ namespace Main {
 		return retV;
 	};
 
-	void Application::showUsage() {
-		printf("xyo-coff-to-def - Extract symbols from COFF object and generate a DEF file for linker\n");
-		printf("version %s build %s [%s]\n", XYOCoffToDef::Version::version(), XYOCoffToDef::Version::build(), XYOCoffToDef::Version::datetime());
-		printf("%s\n\n", XYOCoffToDef::Copyright::fullCopyright());
-		printf("%s\n",
-		       "usage:\n"
-		       "    xyo-coff-to-def [--out file] [--mode type] [--show] foo1.obj foo2.obj ...\n\n"
-		       "options:\n"
-		       "    --out file     output file (default out.def)\n"
-		       "    --mode type    mode of operation [ WIN32 | WIN64 ]\n"
-		       "    --license      show license\n"
-		       "    --show         show coff symbols\n");
-	};
-
-	void Application::showLicense() {
-		printf("%s", XYOCoffToDef::License::content());
-	};
-
-	int Application::main(int cmdN, char *cmdS[]) {
-		TRedBlackTreeOne<String> coffList;
-		TRedBlackTreeOne<String> defList;
-		int i;
-		char *opt;
-		char *defFile;
-		int coffMode;
-		int showCoffSymbols;
-		TRedBlackTreeOne<String>::TNode *coff;
-
-		showCoffSymbols = 0;
-		defFile = "out.def";
-		coffMode = 0;
-
-		if (cmdN < 2) {
-			showUsage();
-			return 0;
-		};
-
-		for (i = 1; i < cmdN; ++i) {
-			if (strncmp(cmdS[i], "--", 2) == 0) {
-				opt = &cmdS[i][2];
-				if (strcmp(opt, "out") == 0) {
-					if (i + 1 < cmdN) {
-						defFile = cmdS[i + 1];
-						++i;
-					};
-					continue;
-				} else if (strcmp(opt, "mode") == 0) {
-					if (i + 1 < cmdN) {
-						if (strcmp(cmdS[i + 1], "WIN32") == 0) {
-							coffMode = 0;
-						};
-						if (strcmp(cmdS[i + 1], "WIN64") == 0) {
-							coffMode = 1;
-						};
-						++i;
-					};
-					continue;
-				};
-				if (strcmp(opt, "license") == 0) {
-					showLicense();
-				};
-				if (strcmp(opt, "show") == 0) {
-					showCoffSymbols = 1;
-				};
-			} else {
-				coffList.set(String(cmdS[i]));
-			};
-		};
-
-		for (coff = coffList.begin(); coff; coff = coff->successor()) {
-			if (coff->key[0] == '@') {
-				FILE *in;
-				in = fopen((char *)&(coff->key.value())[1], "rb");
-				if (in != nullptr) {
-					int k;
-					char buffer[1024];
-					while (fgets(buffer, 1024, in)) {
-						if (buffer[0] == '/') {
-							if (buffer[1] == '/') {
-								continue;
-							};
-						};
-						for (k = strlen(buffer); k >= 0; --k) {
-							if (buffer[k] == '\r') {
-								buffer[k] = 0;
-							};
-							if (buffer[k] == '\n') {
-								buffer[k] = 0;
-							};
-						};
-						getCoffSymbolsFromFile((PTSTR)buffer, defList, showCoffSymbols);
-					};
-					fclose(in);
-				};
-			} else {
-				getCoffSymbolsFromFile((PTSTR)coff->key.value(), defList, showCoffSymbols);
-			};
-		};
-
-		if (generateDefFile(defList, defFile, coffMode)) {
-		} else {
-			printf("Error: unable to generate def file %s\n", defFile);
-			return 1;
-		};
-
-		return 0;
-	};
-
-	void Application::initMemory() {
-		String::initMemory();
-		Error::initMemory();
-		TMemory<TRedBlackTreeOne<String>>::initMemory();
-	};
-
 };
 
-XYO_APPLICATION_MAIN_STD(Main::Application);
+#ifndef XYO_COFFTODEF_LIBRARY
+XYO_APPLICATION_MAIN(XYO::CoffToDef::Application);
+#endif

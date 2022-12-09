@@ -1,0 +1,13 @@
+{
+	"project": {
+		"name":"xyo-coff-to-def",
+		"type":"xyo-cpp",
+		"make" : "exe.static",
+		"SPDX-License-Identifier": "MIT",
+		"sourcePath" : "XYO/CoffToDef",
+		"outputPath" : "output",
+		"dependency" : [
+			"xyo-system"
+		]
+	}
+}

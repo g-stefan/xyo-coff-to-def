@@ -1,0 +1,13 @@
+// Coff To Def
+// Copyright (c) 2022 Grigore Stefan <g_stefan@yahoo.com>
+// MIT License (MIT) <http://opensource.org/licenses/MIT>
+// SPDX-FileCopyrightText: 2022 Grigore Stefan <g_stefan@yahoo.com>
+// SPDX-License-Identifier: MIT
+
+#include <XYO/CoffToDef/Application.rh>
+#include <XYO/CoffToDef/Copyright.rh>
+#include <XYO/CoffToDef/Version.rh>
+
+1  ICON "Application.ico"
+
+XYO_APPLICATION_VERSION_INFO(XYO_COFFTODEF,"exec-cgi.exe","Execute php script as cgi")

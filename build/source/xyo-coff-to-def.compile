@@ -1,3 +1,0 @@
---exe xyo-coff-to-def
---use-project=xyo.static
---output-bin-path-is-output
