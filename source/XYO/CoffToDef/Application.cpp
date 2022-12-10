@@ -19,7 +19,7 @@ namespace XYO::CoffToDef {
 	void Application::showUsage() {
 		printf("xyo-coff-to-def - Extract symbols from COFF object and generate a DEF file for linker\n");
 		printf("version %s build %s [%s]\n", CoffToDef::Version::version(), CoffToDef::Version::build(), CoffToDef::Version::datetime());
-		printf("%s\n\n", CoffToDef::Copyright::fullCopyright());
+		printf("%s\n\n", CoffToDef::Copyright::copyright());
 		printf("%s\n",
 		       "usage:\n"
 		       "    xyo-coff-to-def [--out file] [--mode type] [--show] foo1.obj foo2.obj ...\n\n"
@@ -30,8 +30,8 @@ namespace XYO::CoffToDef {
 		       "    --show         show coff symbols\n");
 	};
 
-	void Application::showLicense() {		
-		printf("%s%s", CoffToDef::License::licenseHeader(), CoffToDef::License::licenseBody());		
+	void Application::showLicense() {
+		printf("%s", CoffToDef::License::license());
 	};
 
 	void Application::showVersion() {

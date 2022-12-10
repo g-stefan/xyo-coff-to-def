@@ -13,7 +13,6 @@ namespace XYO::CoffToDef::Copyright {
 	static const char *publisher_ = XYO_COFFTODEF_PUBLISHER;
 	static const char *company_ = XYO_COFFTODEF_COMPANY;
 	static const char *contact_ = XYO_COFFTODEF_CONTACT;
-	static const char *fullCopyright_ = XYO_COFFTODEF_FULL_COPYRIGHT;
 
 	const char *copyright() {
 		return copyright_;
@@ -29,10 +28,6 @@ namespace XYO::CoffToDef::Copyright {
 
 	const char *contact() {
 		return contact_;
-	};
-
-	const char *fullCopyright() {
-		return fullCopyright_;
 	};
 
 };
