@@ -7,8 +7,8 @@
 #ifndef XYO_COFFTODEF_APPLICATION_HPP
 #define XYO_COFFTODEF_APPLICATION_HPP
 
-#ifndef XYO_COFFTODEF_DEPENDENCY_HPP
-#	include <XYO/CoffToDef/Dependency.hpp>
+#ifndef XYO_COFFTODEF_COFF_HPP
+#	include <XYO/CoffToDef/Coff.hpp>
 #endif
 
 namespace XYO::CoffToDef {
@@ -27,8 +27,8 @@ namespace XYO::CoffToDef {
 
 			static void initMemory();
 
-			void getCoffSymbolsFromFile(PTSTR pszFileName, TRedBlackTreeOne<String> &retV, int showCoffSymbols);
-			int generateDefFile(TRedBlackTreeOne<String> &inList, PTSTR pszFileName, int mode);
+			// Expand a response file (@file): one object per line, "//" comments, empty lines ignored
+			bool readResponseFile(const String &fileName, TDynamicArray<String> &fileList, int level);
 	};
 
 };
