@@ -1,6 +1,5 @@
 {
 	"solution": {
-		"namespace" : "xyo",
 		"name" : "xyo-coff-to-def",
 		"type" : "xyo-cpp",
 		"projects": [
